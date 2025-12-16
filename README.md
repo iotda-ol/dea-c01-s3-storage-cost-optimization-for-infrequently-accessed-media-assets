@@ -1,0 +1,2 @@
+# dea-c01-s3-storage-cost-optimization-for-infrequently-accessed-media-assets
+This repository demonstrates an Amazon S3 cost-optimization strategy for media assets that are frequently accessed initially and rarely accessed later. It uses S3 lifecycle policies to transition objects from S3 Standard to S3 Standard-IA while maintaining low-latency access and reducing long-term storage costs, aligned with DEA-C01 best practices.
