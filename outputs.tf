@@ -44,6 +44,6 @@ output "cost_optimization_summary" {
     transition_after_days  = var.days_to_transition_ia
     target_storage_class   = "S3 Standard-IA"
     access_latency         = "Millisecond latency maintained"
-    estimated_cost_savings = "Up to 40% reduction after transition"
+    estimated_cost_savings = "Up to 46% storage cost reduction after transition"
   }
 }

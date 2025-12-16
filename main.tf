@@ -90,21 +90,30 @@ resource "aws_s3_bucket_lifecycle_configuration" "media_assets" {
 }
 
 # Intelligent-Tiering configuration for additional optimization (optional)
-resource "aws_s3_bucket_intelligent_tiering_configuration" "media_assets" {
-  bucket = aws_s3_bucket.media_assets.id
-  name   = "EntireBucket"
-
-  status = "Enabled"
-
-  # Archive access tier - move objects not accessed for 90 days
-  tiering {
-    access_tier = "ARCHIVE_ACCESS"
-    days        = 90
-  }
-
-  # Deep archive access tier - move objects not accessed for 180 days
-  tiering {
-    access_tier = "DEEP_ARCHIVE_ACCESS"
-    days        = 180
-  }
-}
+# NOTE: This is commented out by default to avoid conflicts with the explicit
+# lifecycle policy above. Intelligent-Tiering and explicit lifecycle rules can
+# compete with each other. Use Intelligent-Tiering if you have unpredictable
+# access patterns and want fully automated optimization. Otherwise, rely on the
+# explicit lifecycle policy for predictable transitions.
+#
+# To enable Intelligent-Tiering, uncomment the resource below and comment out
+# or remove the lifecycle configuration resource above.
+#
+# resource "aws_s3_bucket_intelligent_tiering_configuration" "media_assets" {
+#   bucket = aws_s3_bucket.media_assets.id
+#   name   = "EntireBucket"
+#
+#   status = "Enabled"
+#
+#   # Archive access tier - move objects not accessed for 90 days
+#   tiering {
+#     access_tier = "ARCHIVE_ACCESS"
+#     days        = 90
+#   }
+#
+#   # Deep archive access tier - move objects not accessed for 180 days
+#   tiering {
+#     access_tier = "DEEP_ARCHIVE_ACCESS"
+#     days        = 180
+#   }
+# }
