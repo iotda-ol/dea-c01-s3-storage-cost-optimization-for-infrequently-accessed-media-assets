@@ -1,0 +1,110 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'S3 Storage Cost Optimization for Media Assets - CloudFormation Template'
+
+Parameters:
+  BucketName:
+    Type: String
+    Description: Name of the S3 bucket for media assets
+    MinLength: 3
+    MaxLength: 63
+    AllowedPattern: ^[a-z0-9][a-z0-9.-]*[a-z0-9]$
+  
+  StandardIATransitionDays:
+    Type: Number
+    Description: Days before transitioning to Standard-IA
+    Default: 30
+    MinValue: 30
+  
+  GlacierTransitionDays:
+    Type: Number
+    Description: Days before transitioning to Glacier
+    Default: 90
+    MinValue: 90
+  
+  ExpirationDays:
+    Type: Number
+    Description: Days before object expiration (0 for no expiration)
+    Default: 365
+    MinValue: 0
+
+Resources:
+  MediaAssetsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: MediaAssetCostOptimization
+            Status: Enabled
+            Prefix: media/
+            Transitions:
+              - TransitionInDays: !Ref StandardIATransitionDays
+                StorageClass: STANDARD_IA
+              - TransitionInDays: !Ref GlacierTransitionDays
+                StorageClass: GLACIER
+            ExpirationInDays: !If
+              - HasExpiration
+              - !Ref ExpirationDays
+              - !Ref AWS::NoValue
+            NoncurrentVersionTransitions:
+              - TransitionInDays: 30
+                StorageClass: STANDARD_IA
+              - TransitionInDays: 90
+                StorageClass: GLACIER
+            NoncurrentVersionExpirationInDays: 120
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Purpose
+          Value: MediaAssetStorage
+        - Key: CostOptimization
+          Value: Enabled
+
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref MediaAssetsBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource:
+              - !GetAtt MediaAssetsBucket.Arn
+              - !Sub '${MediaAssetsBucket.Arn}/*'
+            Condition:
+              Bool:
+                'aws:SecureTransport': false
+
+Conditions:
+  HasExpiration: !Not [!Equals [!Ref ExpirationDays, 0]]
+
+Outputs:
+  BucketName:
+    Description: Name of the S3 bucket
+    Value: !Ref MediaAssetsBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-BucketName'
+  
+  BucketArn:
+    Description: ARN of the S3 bucket
+    Value: !GetAtt MediaAssetsBucket.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-BucketArn'
+  
+  BucketDomainName:
+    Description: Domain name of the S3 bucket
+    Value: !GetAtt MediaAssetsBucket.DomainName
+    Export:
+      Name: !Sub '${AWS::StackName}-BucketDomainName'
