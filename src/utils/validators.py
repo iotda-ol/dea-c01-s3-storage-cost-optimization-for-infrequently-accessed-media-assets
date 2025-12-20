@@ -5,7 +5,7 @@ Provides reusable validation functions for S3 operations.
 """
 
 import re
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 
 def validate_bucket_name(bucket_name: str) -> bool:
@@ -46,7 +46,7 @@ def validate_bucket_name(bucket_name: str) -> bool:
     return True
 
 
-def validate_lifecycle_config(lifecycle_config: Dict) -> tuple[bool, Optional[str]]:
+def validate_lifecycle_config(lifecycle_config: Dict) -> Tuple[bool, Optional[str]]:
     """
     Validate S3 lifecycle configuration.
     
@@ -95,7 +95,7 @@ def validate_days_config(
     standard_ia_days: int,
     glacier_days: int,
     expiration_days: Optional[int] = None
-) -> tuple[bool, Optional[str]]:
+) -> Tuple[bool, Optional[str]]:
     """
     Validate lifecycle transition days configuration.
     
