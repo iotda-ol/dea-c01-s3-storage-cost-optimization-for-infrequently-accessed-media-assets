@@ -1,0 +1,25 @@
+# Example Terraform variables configuration
+# Copy this file to terraform.tfvars and update with your values
+
+aws_region = "us-east-1"
+environment = "production"
+
+# Unique bucket name (must be globally unique across all AWS accounts)
+bucket_name = "my-media-assets-bucket-12345"
+
+# Number of days before transitioning to Standard-IA
+days_to_transition_ia = 30
+
+# Enable bucket versioning for data protection
+enable_versioning = true
+
+# Additional custom tags
+additional_tags = {
+  CostCenter = "Marketing"
+  Team       = "Digital Media"
+  Compliance = "GDPR"
+}
+
+# WARNING: Setting this to true allows Terraform to delete bucket with objects
+# Only enable for non-production environments
+force_destroy = false
