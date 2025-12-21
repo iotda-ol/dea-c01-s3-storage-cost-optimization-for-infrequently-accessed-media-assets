@@ -1,0 +1,20 @@
+{
+  "aws": {
+    "region": "us-east-1",
+    "profile": null
+  },
+  "lifecycle": {
+    "standard_ia_days": 30,
+    "glacier_days": 90,
+    "deep_archive_days": 180,
+    "expiration_days": 365
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  },
+  "monitoring": {
+    "enabled": true,
+    "interval_hours": 24
+  }
+}
